@@ -1,0 +1,29 @@
+mavenPublishing {
+  coordinates(GROUP, POM_ARTIFACT_ID, VERSION_NAME)
+
+  pom {
+    name = POM_ARTIFACT_ID
+    description = POM_DESCRIPTION
+    url = POM_URL
+
+    licenses {
+      license {
+        name = POM_LICENCE_NAME
+        url = POM_LICENCE_URL
+      }
+    }
+
+    developers {
+      developer {
+        id = POM_DEVELOPER_ID
+        name = POM_DEVELOPER_NAME
+      }
+    }
+
+    scm {
+      connection = POM_SCM_CONNECTION
+      developerConnection = POM_SCM_DEV_CONNECTION
+      url = POM_SCM_URL
+    }
+  }
+}
