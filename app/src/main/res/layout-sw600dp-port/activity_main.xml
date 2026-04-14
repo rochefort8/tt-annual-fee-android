@@ -1,111 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2016 Square, Inc.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:background="#FFFDF7">
 
   <LinearLayout
-      android:id="@+id/total_and_checkout_row"
+      android:id="@+id/bottom_action_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:padding="@dimen/large_padding"
+      android:layout_alignParentBottom="true"
       android:background="@color/white"
-      android:gravity="center_vertical"
-      >
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        >
-
-    <TextView
-        android:id="@+id/total_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/total"
-        android:textColor="@color/black"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
-
-    <TextView
-        android:id="@+id/total_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_margin"
-        android:textColor="@color/black"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
-
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo"
-        android:contentDescription="@string/logo"
-        />
+      android:orientation="vertical"
+      android:padding="16dp">
 
     <Button
         android:id="@+id/checkout_button"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:text="@string/checkout"
         style="@style/Button.Primary"
-        />
-
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:enabled="false"
+        android:text="@string/start_payment"
+        android:textAllCaps="false"
+        android:textStyle="bold" />
   </LinearLayout>
 
-  <include
-      android:id="@+id/bike_image_and_buttons"
-      android:layout_height="0dp"
-      android:layout_weight="1"
+  <ScrollView
       android:layout_width="match_parent"
-      layout="@layout/bike_image_view"/>
+      android:layout_height="match_parent"
+      android:layout_above="@id/bottom_action_container"
+      android:fillViewport="true">
 
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_height="@dimen/bike_item_list_portrait_height"
-      android:layout_width="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/modifier_list"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          android:padding="12dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/accessory_list"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/annual_fee_payment"
+            android:gravity="center"
+            android:textColor="#1C1C1C"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+      </LinearLayout>
 
-  </LinearLayout>
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="24dp"
+          android:text="@string/graduation_term"
+          android:textColor="#2B2B2B"
+          android:textSize="14sp"
+          android:textStyle="bold" />
 
-</LinearLayout>
+      <Spinner
+          android:id="@+id/graduation_term_spinner"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:background="@drawable/amount_button_unselected"
+          android:padding="10dp" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
+          android:text="@string/full_name"
+          android:textColor="#2B2B2B"
+          android:textSize="14sp"
+          android:textStyle="bold" />
+
+      <EditText
+          android:id="@+id/payer_name_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:background="@drawable/amount_button_unselected"
+          android:hint="@string/name_hint"
+          android:inputType="textPersonName"
+          android:maxLines="1"
+          android:padding="12dp" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
+          android:text="@string/amount"
+          android:textColor="#2B2B2B"
+          android:textSize="14sp"
+          android:textStyle="bold" />
+
+      <Button
+          android:id="@+id/amount_social"
+          style="@style/Button.Primary"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:layout_marginTop="8dp"
+          android:background="@drawable/amount_button_selected"
+          android:text="@string/amount_social"
+          android:textAllCaps="false"
+          android:textStyle="bold" />
+
+      <Button
+          android:id="@+id/amount_student"
+          style="@style/Button.Primary"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:layout_marginTop="10dp"
+          android:background="@drawable/amount_button_unselected"
+          android:text="@string/amount_student"
+          android:textAllCaps="false"
+          android:textColor="@color/owen_yellow"
+          android:textStyle="bold" />
+
+      <Button
+          android:id="@+id/amount_development"
+          style="@style/Button.Primary"
+          android:layout_width="match_parent"
+          android:layout_height="56dp"
+          android:layout_marginTop="10dp"
+          android:background="@drawable/amount_button_unselected"
+          android:text="@string/amount_development"
+          android:textAllCaps="false"
+          android:textColor="@color/owen_yellow"
+          android:textStyle="bold" />
+
+    </LinearLayout>
+  </ScrollView>
+
+</RelativeLayout>

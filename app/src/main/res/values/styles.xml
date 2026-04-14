@@ -35,28 +35,14 @@
     <item name="android:background">@color/owen_yellow</item>
   </style>
 
-  <style name="Button.Primary.White">
+  <style name="Button.Primary.White" parent="@style/Widget.AppCompat.Button.Borderless">
+    <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     <item name="android:textColor">@color/owen_yellow</item>
-    <item name="android:background">@drawable/owen_selector_clear_yellow_border</item>
-    <item name="android:paddingLeft">@dimen/my_button_padding</item>
-    <item name="android:paddingRight">@dimen/my_button_padding</item>
+    <item name="android:background">@color/white</item>
   </style>
 
   <style name="ListHeader" parent="TextAppearance.AppCompat.Medium">
-    <item name="background">@drawable/list_header_light_grey_darker_grey_border</item>
+    <item name="android:background">@color/owen_light_grey</item>
   </style>
 
-  <style name="BikeListItem" parent="AppTheme">
-    <item name="background">@drawable/owen_selector_white_gray_border</item>
-  </style>
-
-  <style name="NewAccessoryItem" parent="BikeListItem">
-    <item name="android:textColor">@color/owen_yellow</item>
-  </style>
-
-  <style name="BikeModifierButton" parent="@style/Widget.AppCompat.Button">
-    <item name="background">@drawable/clear_rounded_white_border</item>
-  </style>
-
-  <dimen name="my_button_padding">45dp</dimen>
 </resources>
