@@ -26,16 +26,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.example.owensbikes.BikeItem.Category.ACCESSORY;
 import static com.example.owensbikes.BikeItem.Category.MODIFIER;
 
 public class BikeItemAdapter extends RecyclerView.Adapter<BikeItemAdapter.ViewHolder> {
-
-  static final DecimalFormat PRICE_FORMAT = new DecimalFormat("0.00");
 
   public static BikeItemAdapter createWithAccessories(BikeItemManager.ItemState itemState,
       List<BikeItem> accessories) {
@@ -126,7 +125,8 @@ public class BikeItemAdapter extends RecyclerView.Adapter<BikeItemAdapter.ViewHo
   }
 
   public static String formatPrice(int amount) {
-    return "$" + PRICE_FORMAT.format(((double) amount) / 100);
+    NumberFormat yenFormat = NumberFormat.getNumberInstance(Locale.JAPAN);
+    return "¥" + yenFormat.format(amount);
   }
 
   @Override public int getItemViewType(int position) {
@@ -318,4 +318,3 @@ public class BikeItemAdapter extends RecyclerView.Adapter<BikeItemAdapter.ViewHo
     }
   }
 }
-
