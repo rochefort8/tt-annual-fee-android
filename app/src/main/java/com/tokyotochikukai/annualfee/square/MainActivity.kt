@@ -6,10 +6,14 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Gravity
+import android.util.TypedValue
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -45,6 +49,9 @@ class MainActivity : AppCompatActivity() {
 
   private var selectedAmount: Int = 3000
   private lateinit var selectedAmountLabel: String
+  private var pendingTerm: String? = null
+  private var pendingName: String? = null
+  private var pendingAmount: Int? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -65,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     setupGraduationTerms()
     setupAmountButtons()
     wireFormValidation()
+    showDevBypassBadgeIfEnabled()
 
     checkoutButton.setOnClickListener { showConfirmationDialog() }
   }
@@ -173,14 +181,21 @@ class MainActivity : AppCompatActivity() {
     val term = graduationTermSpinner.selectedItem.toString()
     val name = payerNameInput.text.toString().trim()
     val note = "$term:$name"
+    pendingTerm = term
+    pendingName = name
+    pendingAmount = selectedAmount
+
+    if (BuildConfig.DEV_PAYMENT_BYPASS) {
+      showDevPaymentBypassDialog(term, name, selectedAmount)
+      return
+    }
+
+    val orderNumber = nextOrderNumber()
 
     val tenderTypes = EnumSet.of(
       ChargeRequest.TenderType.CARD,
       ChargeRequest.TenderType.CASH
     )
-
-    val orderNumber = orderInfoPrefs.getLong(ORDER_NUMBER, FIRST_ORDER_NUMBER) + 1
-    orderInfoPrefs.edit().putLong(ORDER_NUMBER, orderNumber).apply()
 
     val chargeRequest = ChargeRequest.Builder(selectedAmount, CurrencyCode.JPY)
       .note(note)
@@ -203,16 +218,87 @@ class MainActivity : AppCompatActivity() {
 
     if (data == null) {
       transactionResultHandler.onNoResult()
+      clearPendingPayment()
       return
     }
 
     if (resultCode == RESULT_OK) {
-      payerNameInput.setText("")
-      selectAmount(3000, getString(R.string.label_social), amountSocialButton)
-      graduationTermSpinner.setSelection(0)
-      transactionResultHandler.onSuccess(data)
+      val term = pendingTerm ?: graduationTermSpinner.selectedItem.toString()
+      val name = pendingName ?: payerNameInput.text.toString().trim()
+      val amount = pendingAmount ?: selectedAmount
+      transactionResultHandler.onSuccess(data, term, name, amount)
+      resetForm()
+      clearPendingPayment()
     } else {
       transactionResultHandler.onError(data)
+      clearPendingPayment()
     }
+  }
+
+  private fun showDevPaymentBypassDialog(term: String, name: String, amount: Int) {
+    AlertDialog.Builder(this)
+      .setTitle(R.string.dev_bypass_title)
+      .setMessage(R.string.dev_bypass_message)
+      .setNegativeButton(R.string.dev_bypass_failure) { _, _ ->
+        dialogComposer.showErrorDialogWithRetry(
+          R.string.error_transaction_cancelled,
+          R.string.error_transaction_cancelled_message
+        )
+        clearPendingPayment()
+      }
+      .setPositiveButton(R.string.dev_bypass_success) { _, _ ->
+        dialogComposer.showSuccessDialog(term, name, amount)
+        resetForm()
+        clearPendingPayment()
+      }
+      .setNeutralButton(R.string.cancel, null)
+      .show()
+  }
+
+  private fun nextOrderNumber(): Long {
+    val orderNumber = orderInfoPrefs.getLong(ORDER_NUMBER, FIRST_ORDER_NUMBER) + 1
+    orderInfoPrefs.edit().putLong(ORDER_NUMBER, orderNumber).apply()
+    return orderNumber
+  }
+
+  private fun resetForm() {
+    payerNameInput.setText("")
+    selectAmount(3000, getString(R.string.label_social), amountSocialButton)
+    graduationTermSpinner.setSelection(0)
+  }
+
+  private fun clearPendingPayment() {
+    pendingTerm = null
+    pendingName = null
+    pendingAmount = null
+  }
+
+  private fun showDevBypassBadgeIfEnabled() {
+    if (!BuildConfig.DEV_PAYMENT_BYPASS) return
+
+    val badge = TextView(this).apply {
+      text = getString(R.string.dev_bypass_badge)
+      setTextColor(ContextCompat.getColor(this@MainActivity, R.color.white))
+      setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.owen_yellow))
+      setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+      setPadding(dpToPx(10), dpToPx(4), dpToPx(10), dpToPx(4))
+      elevation = dpToPx(4).toFloat()
+    }
+
+    val params = FrameLayout.LayoutParams(
+      FrameLayout.LayoutParams.WRAP_CONTENT,
+      FrameLayout.LayoutParams.WRAP_CONTENT
+    ).apply {
+      gravity = Gravity.TOP or Gravity.END
+      topMargin = dpToPx(8)
+      marginEnd = dpToPx(8)
+    }
+
+    val decorView = window.decorView as FrameLayout
+    decorView.addView(badge, params)
+  }
+
+  private fun dpToPx(dp: Int): Int {
+    return (dp * resources.displayMetrics.density).toInt()
   }
 }

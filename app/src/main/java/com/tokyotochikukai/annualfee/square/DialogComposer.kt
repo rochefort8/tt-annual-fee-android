@@ -30,6 +30,16 @@ class DialogComposer(
       .show()
   }
 
+  fun showSuccessDialog(term: String, name: String, amount: Int) {
+    val amountText = activity.getString(R.string.yen_amount_format, amount)
+    val message = activity.getString(R.string.success_message_template, term, name, amountText)
+    AlertDialog.Builder(activity)
+      .setTitle(R.string.success_title)
+      .setMessage(message)
+      .setPositiveButton(activity.getString(R.string.ok), null)
+      .show()
+  }
+
   fun showPointOfSaleUninstalledDialog() {
     AlertDialog.Builder(activity)
       .setTitle(R.string.error_install_point_of_sale)

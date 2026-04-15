@@ -16,9 +16,9 @@ class TransactionResultHandler(
     dialogComposer.showErrorDialog(R.string.error_no_result, R.string.error_no_result_message)
   }
 
-  fun onSuccess(data: Intent) {
-    val success = posClient.parseChargeSuccess(data)
-    TransactionSuccessActivity.start(activity, success.requestMetadata ?: "")
+  fun onSuccess(data: Intent, term: String, name: String, amount: Int) {
+    posClient.parseChargeSuccess(data)
+    dialogComposer.showSuccessDialog(term, name, amount)
   }
 
   fun onError(data: Intent) {

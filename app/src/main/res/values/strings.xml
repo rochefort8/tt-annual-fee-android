@@ -63,4 +63,11 @@
   <string name="confirm_message_template">卒業期: %1$s\n氏名: %2$s\n金額: %3$s\n区分: %4$s</string>
   <string name="payment_note_template">年会費決済\n卒業期: %1$s\n氏名: %2$s\n区分: %3$s\n金額: %4$d円</string>
   <string name="yen_amount_format">¥%,d</string>
+  <string name="dev_bypass_title">開発用: 決済結果を選択</string>
+  <string name="dev_bypass_message">Squareを呼び出さずに、表示確認用の結果を選択できます。</string>
+  <string name="dev_bypass_success">成功を表示</string>
+  <string name="dev_bypass_failure">失敗を表示</string>
+  <string name="dev_bypass_badge">DEV BYPASS ON</string>
+  <string name="success_title">決済が完了しました</string>
+  <string name="success_message_template">卒業期: %1$s\n氏名: %2$s\n金額: %3$s</string>
 </resources>
