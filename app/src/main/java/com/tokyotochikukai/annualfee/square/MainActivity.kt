@@ -22,6 +22,7 @@ import com.squareup.sdk.pos.CurrencyCode
 import com.squareup.sdk.pos.PosApi
 import com.squareup.sdk.pos.PosClient
 import com.squareup.sdk.pos.PosSdk
+import org.json.JSONObject
 import java.util.Calendar
 import java.util.EnumSet
 import java.util.concurrent.TimeUnit
@@ -80,12 +81,31 @@ class MainActivity : AppCompatActivity() {
   private fun setupGraduationTerms() {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val latestGraduateYear = currentYear + 1
-    val terms = mutableListOf<String>()
+    val terms = mutableListOf<GraduationTermOption>()
     for (year in latestGraduateYear downTo 1952) {
-      terms.add(formatGraduationLabel(year))
+      val graduate = year - 1902
+      terms.add(
+        GraduationTermOption(
+          id = graduate.toLong(),
+          graduate = graduate,
+          label = formatGraduationLabel(year)
+        )
+      )
     }
-    terms.add("不明")
-    terms.add("非卒業生")
+    terms.add(
+      GraduationTermOption(
+        id = 90001L,
+        graduate = null,
+        label = "不明"
+      )
+    )
+    terms.add(
+      GraduationTermOption(
+        id = 90002L,
+        graduate = null,
+        label = "非卒業生"
+      )
+    )
 
     val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, terms)
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -158,7 +178,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun showConfirmationDialog() {
-    val term = graduationTermSpinner.selectedItem.toString()
+    val term = selectedGraduationTermOption().label
     val name = payerNameInput.text.toString().trim()
 
     val message = getString(
@@ -178,9 +198,10 @@ class MainActivity : AppCompatActivity() {
   }
 
   fun checkout() {
-    val term = graduationTermSpinner.selectedItem.toString()
+    val termOption = selectedGraduationTermOption()
+    val term = termOption.label
     val name = payerNameInput.text.toString().trim()
-    val note = "$term:$name"
+    val note = buildSquareNote(termOption.graduate, name)
     pendingTerm = term
     pendingName = name
     pendingAmount = selectedAmount
@@ -223,7 +244,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     if (resultCode == RESULT_OK) {
-      val term = pendingTerm ?: graduationTermSpinner.selectedItem.toString()
+      val term = pendingTerm ?: selectedGraduationTermOption().label
       val name = pendingName ?: payerNameInput.text.toString().trim()
       val amount = pendingAmount ?: selectedAmount
       transactionResultHandler.onSuccess(data, term, name, amount)
@@ -271,6 +292,31 @@ class MainActivity : AppCompatActivity() {
     pendingTerm = null
     pendingName = null
     pendingAmount = null
+  }
+
+  private fun buildSquareNote(graduate: Int?, name: String): String {
+    return JSONObject()
+      .put("graduate", graduate ?: JSONObject.NULL)
+      .put("name", name)
+      .toString()
+  }
+
+  private fun selectedGraduationTermOption(): GraduationTermOption {
+    val selected = graduationTermSpinner.selectedItem
+    return selected as? GraduationTermOption
+      ?: GraduationTermOption(
+        id = 90001L,
+        graduate = null,
+        label = selected?.toString() ?: "不明"
+      )
+  }
+
+  private data class GraduationTermOption(
+    val id: Long,
+    val graduate: Int?,
+    val label: String
+  ) {
+    override fun toString(): String = label
   }
 
   private fun showDevBypassBadgeIfEnabled() {
